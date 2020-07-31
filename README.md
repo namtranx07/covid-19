@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # covid_19
 
 This project was build to provide some information about covid 19 in the world.
@@ -14,3 +15,7 @@ A few resources to get you started if this is your first Flutter project:
 For help get started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# covid-19
+1 screen total covid confirms
+>>>>>>> 92cde9d65b8992e621fbba8146cd2d93f4021fd8
