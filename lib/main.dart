@@ -1,6 +1,9 @@
+import 'package:covid_19/component/splash_screen.dart';
+import 'package:covid_19/covid/covid_bloc.dart';
 import 'package:covid_19/network/base_url.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'network/configs.dart';
 
@@ -46,12 +49,7 @@ class MyApp extends StatelessWidget {
      return SafeArea(
        top: false,
        bottom: false,
-       child: Scaffold(
-         appBar: AppBar(
-           title: Text("Nothing to describe"),
-         ),
-         backgroundColor: Colors.white,
-       ),
+       child: SplashScreenWidget(),
      );
    }
  }
