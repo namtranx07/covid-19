@@ -7,6 +7,4 @@ abstract class CovidEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class TestEvent extends CovidEvent {
-
-}
+class InitialEvent extends CovidEvent {}

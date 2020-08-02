@@ -1,17 +1,18 @@
+import 'package:covid_19/model/summary.dart';
 import 'package:equatable/equatable.dart';
 
 class CovidState extends Equatable {
-  final bool finishSplash;
+  final Summary summary;
 
-  CovidState({this.finishSplash = false,});
+  CovidState({this.summary,});
 
-  CovidState copyWith({bool finishSplash}) =>
+  CovidState copyWith({Summary summary}) =>
       CovidState(
-        finishSplash: finishSplash ?? false,
+        summary: summary ?? this,
       );
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [summary];
 
   @override
   bool operator ==(Object other) {
