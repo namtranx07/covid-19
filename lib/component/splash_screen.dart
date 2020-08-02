@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:covid_19/covid/covid_widget.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class SplashScreenWidget extends StatefulWidget {
   @override

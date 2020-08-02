@@ -1,9 +1,7 @@
 import 'package:covid_19/component/splash_screen.dart';
-import 'package:covid_19/covid/covid_bloc.dart';
 import 'package:covid_19/network/base_url.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'network/configs.dart';
 
@@ -19,8 +17,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.grey,
+        primarySwatch: Colors.pink,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         fontFamily: "RedHatDisplay",
       ),
@@ -37,7 +36,6 @@ class MyApp extends StatelessWidget {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -46,11 +44,7 @@ class MyApp extends StatelessWidget {
 
    @override
    Widget build(BuildContext context) {
-     return SafeArea(
-       top: false,
-       bottom: false,
-       child: SplashScreenWidget(),
-     );
+     return SplashScreenWidget();
    }
  }
 
