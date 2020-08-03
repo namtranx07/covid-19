@@ -19,7 +19,7 @@ class CovidBloc extends Bloc<CovidEvent, CovidState> {
         final vnData = summaryData.countries.firstWhere(
               (element) => element.countryCode == "VN",
         orElse: () => null);
-        yield state.copyWith(summary: summaryData, vnSummary: vnData);
+        yield state.copyWith(summary: summaryData, vnSummary: vnData, isLoading: false);
         break;
     }
   }

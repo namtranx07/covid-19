@@ -66,7 +66,6 @@ flutter:
     - assets/fonts/RedHatDisplay-Medium.ttf
     - assets/fonts/RedHatDisplay-MediumItalic.ttf
     - assets/fonts/RedHatDisplay-Regular.ttf
-    - images/background.png
     - images/splash_screen.flr
     - images/user.svg
   #   - images/a_dot_burr.jpeg

@@ -5,6 +5,8 @@ import 'package:covid_19/covid/covid_event.dart';
 import 'package:covid_19/covid/covid_state.dart';
 import 'package:covid_19/custom_piechart_painter/custom_piechart.dart';
 import 'package:covid_19/resources/app_icons.dart';
+import 'package:covid_19/utils/custom_appbar.dart';
+import 'package:covid_19/utils/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:covid_19/resources/app_fonts.dart';
 import 'package:flutter/rendering.dart';
@@ -12,6 +14,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pie_chart/pie_chart.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 enum CovidType { TOTAL_CONFIRMED, TOTAL_DEATHS, TOTAL_RECOVERED }
 
@@ -34,6 +37,16 @@ class _CovidWidgetState extends State<CovidWidget> {
 
   final numberFormat = NumberFormat("#,##0", "en_US");
 
+  RefreshController _refreshController;
+
+  @override
+  void initState() {
+    super.initState();
+    bloc = CovidBloc();
+    bloc.add(InitialEvent());
+    _refreshController = RefreshController();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,125 +66,129 @@ class _CovidWidgetState extends State<CovidWidget> {
       body: BlocBuilder<CovidBloc, CovidState>(
         cubit: bloc,
         builder: (context, CovidState state) {
-          return SingleChildScrollView(
-            padding: EdgeInsets.zero,
-            child: Column(
-              children: [
-                SizedBox(height: 32,),
-                _wrappedCard(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 32.0, ),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "Thông tin thế giới",
-                            style: TextStyle(
-                              fontSize: 26,
-                              foreground: Paint()..shader = linearGradient,
-                            ).redHatDisplayBold(),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: double.infinity,
-                        child: _buildCardInfo(
-                            state, CovidType.TOTAL_CONFIRMED),
-                      ),
-                      Container(
-                          width: double.infinity,
-                          child: _buildCardInfo(
-                              state, CovidType.TOTAL_DEATHS)),
-                      Container(
-                          width: double.infinity,
-                          child: _buildCardInfo(
-                              state, CovidType.TOTAL_RECOVERED)),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 32,
-                ),
-                _wrappedCard(child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 32.0, left: 16, right: 16, bottom: 24),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "Cập nhật ngày hôm nay",
-                            style: TextStyle(
-                              fontSize: 26,
+          if (!state.isLoading) {
+            _refreshController.refreshCompleted();
+          }
+          return SmartRefresher(
+            enablePullDown: true,
+            controller: _refreshController,
+            header: LoadingIndicator(),
+            onRefresh: () {
+              bloc.add(InitialEvent());
+            },
+            child: SingleChildScrollView(
+              padding: EdgeInsets.zero,
+              child: Column(
+                children: [
+                  SizedBox(height: 32,),
+                  _wrappedCard(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 32.0, ),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Thông tin thế giới",
+                              style: TextStyle(
+                                fontSize: 26,
                                 foreground: Paint()..shader = linearGradient,
-                            ).redHatDisplayBold(),
+                              ).redHatDisplayBold(),
+                            ),
                           ),
                         ),
-                      ),
-                      _buildPieChart(state),
-                      SizedBox(
-                        height: 24,
-                      ),
-                    ],
+                        Container(
+                          width: double.infinity,
+                          child: _buildCardInfo(
+                              state, CovidType.TOTAL_CONFIRMED),
+                        ),
+                        Container(
+                            width: double.infinity,
+                            child: _buildCardInfo(
+                                state, CovidType.TOTAL_DEATHS)),
+                        Container(
+                            width: double.infinity,
+                            child: _buildCardInfo(
+                                state, CovidType.TOTAL_RECOVERED)),
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 32,
-                ),
-                Card(
-                  color: Colors.white,
-                  elevation: 0,
-                  margin: EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 16.0),
-                  shadowColor: Colors.grey.shade50,
-                  borderOnForeground: false,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
+                  SizedBox(
+                    height: 32,
                   ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 32.0, left: 16, right: 16),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "Thông tin Việt Nam",
-                            style: TextStyle(
-                              fontSize: 26,
-                              foreground: Paint()..shader = linearGradient,
-                            ).redHatDisplayBold(),
+                  _wrappedCard(child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 32.0, left: 16, right: 16, bottom: 24),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Cập nhật ngày hôm nay",
+                              style: TextStyle(
+                                fontSize: 26,
+                                  foreground: Paint()..shader = linearGradient,
+                              ).redHatDisplayBold(),
+                            ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 32),
-                        child: VNBarChartWidget(
-                          animate: true,
-                          seriesList: _createSeriesListData(state),
+                        _buildPieChart(state),
+                        SizedBox(
+                          height: 24,
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 50,
-                ),
-              ],
+                  SizedBox(
+                    height: 32,
+                  ),
+                  Card(
+                    color: Colors.white,
+                    elevation: 0,
+                    margin: EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16.0),
+                    shadowColor: Colors.grey.shade50,
+                    borderOnForeground: false,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 32.0, left: 16, right: 16),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Thông tin Việt Nam",
+                              style: TextStyle(
+                                fontSize: 26,
+                                foreground: Paint()..shader = linearGradient,
+                              ).redHatDisplayBold(),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 32),
+                          child: VNBarChartWidget(
+                            animate: true,
+                            seriesList: _createSeriesListData(state),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 50,
+                  ),
+                ],
+              ),
             ),
           );
         },
       ),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    bloc = CovidBloc();
-    bloc.add(InitialEvent());
   }
 
   Widget _wrappedCard({Widget child}) {
@@ -369,26 +386,5 @@ class _CovidWidgetState extends State<CovidWidget> {
       ),
     ];
   }
-}
-
-class AppBarGradient extends StatelessWidget with PreferredSizeWidget {
-  final AppBar child;
-
-  AppBarGradient({this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: <Color>[Color(0xffDA44bb), Color(0xff8921aa)],
-        )
-      ),
-      child: child,
-    );
-  }
-
-  @override
-  Size get preferredSize => child.preferredSize;
 }
 
