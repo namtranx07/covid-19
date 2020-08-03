@@ -39,7 +39,7 @@ class _SplashScreenWidgetState extends State<SplashScreenWidget> {
   }
 
   startTime() async {
-    var duration = new Duration(seconds: 4);
+    var duration = new Duration(seconds: 2);
     return Timer(duration, route);
   }
 

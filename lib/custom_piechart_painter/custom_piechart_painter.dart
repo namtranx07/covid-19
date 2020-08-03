@@ -116,7 +116,7 @@ class CustomPieChartPainter extends CustomPainter {
     //Finally paint the text above box
     tp.paint(
       canvas,
-      new Offset(
+      Offset(
         (side / 2 + x) - (tp.width / 2),
         (side / 2 + y) - (tp.height / 2),
       ),

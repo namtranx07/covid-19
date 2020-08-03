@@ -6,6 +6,8 @@ class AppIcons {
 
   static const _icon_folder = 'images';
 
+  static final SvgPicture ic_user = loadSvgFromAssetWithCustomColor("user.svg", Colors.grey);
+
   static loadSvgFromAsset(String path) {
     return SvgPicture.asset('$_icon_folder/$path');
   }

@@ -16,7 +16,10 @@ class CovidBloc extends Bloc<CovidEvent, CovidState> {
     switch(event.runtimeType) {
       case InitialEvent:
         final summaryData = await _covidApiImpl.covidSummary();
-        yield state.copyWith(summary: summaryData);
+        final vnData = summaryData.countries.firstWhere(
+              (element) => element.countryCode == "VN",
+        orElse: () => null);
+        yield state.copyWith(summary: summaryData, vnSummary: vnData);
         break;
     }
   }

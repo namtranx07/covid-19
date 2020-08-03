@@ -3,16 +3,18 @@ import 'package:equatable/equatable.dart';
 
 class CovidState extends Equatable {
   final Summary summary;
+  final Country vnSummary;
 
-  CovidState({this.summary,});
+  CovidState({this.summary, this.vnSummary});
 
-  CovidState copyWith({Summary summary}) =>
+  CovidState copyWith({Summary summary, Country vnSummary}) =>
       CovidState(
         summary: summary ?? this,
+        vnSummary: vnSummary ?? this,
       );
 
   @override
-  List<Object> get props => [summary];
+  List<Object> get props => [summary, vnSummary];
 
   @override
   bool operator ==(Object other) {
