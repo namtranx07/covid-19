@@ -37,7 +37,6 @@ class _CovidWidgetState extends State<CovidWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-//      extendBodyBehindAppBar: true,
       backgroundColor: Colors.grey.shade100,
       appBar: AppBarGradient(
         child: AppBar(
