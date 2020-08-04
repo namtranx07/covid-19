@@ -80,12 +80,18 @@ class _CovidWidgetState extends State<CovidWidget> {
               padding: EdgeInsets.zero,
               child: Column(
                 children: [
-                  SizedBox(height: 32,),
+                  SizedBox(
+                    height: 32,
+                  ),
                   _wrappedCard(
                     child: Column(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 32.0, ),
+                          padding: const EdgeInsets.only(
+                            left: 16.0,
+                            right: 16.0,
+                            top: 32.0,
+                          ),
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
@@ -99,13 +105,13 @@ class _CovidWidgetState extends State<CovidWidget> {
                         ),
                         Container(
                           width: double.infinity,
-                          child: _buildCardInfo(
-                              state, CovidType.TOTAL_CONFIRMED),
+                          child:
+                              _buildCardInfo(state, CovidType.TOTAL_CONFIRMED),
                         ),
                         Container(
                             width: double.infinity,
-                            child: _buildCardInfo(
-                                state, CovidType.TOTAL_DEATHS)),
+                            child:
+                                _buildCardInfo(state, CovidType.TOTAL_DEATHS)),
                         Container(
                             width: double.infinity,
                             child: _buildCardInfo(
@@ -116,7 +122,8 @@ class _CovidWidgetState extends State<CovidWidget> {
                   SizedBox(
                     height: 32,
                   ),
-                  _wrappedCard(child: Column(
+                  _wrappedCard(
+                    child: Column(
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(
@@ -127,12 +134,17 @@ class _CovidWidgetState extends State<CovidWidget> {
                               "Cập nhật ngày hôm nay",
                               style: TextStyle(
                                 fontSize: 26,
-                                  foreground: Paint()..shader = linearGradient,
+                                foreground: Paint()..shader = linearGradient,
                               ).redHatDisplayBold(),
                             ),
                           ),
                         ),
-                        _buildPieChart(state),
+                        AnimatedOpacity(
+                            child: _buildPieChart(state),
+                          opacity: !state.isLoading ? 1.0 : 0.0,
+                          duration: Duration(milliseconds: 800),
+                          curve: Curves.easeInCubic,
+                        ),
                         SizedBox(
                           height: 24,
                         ),
@@ -145,8 +157,8 @@ class _CovidWidgetState extends State<CovidWidget> {
                   Card(
                     color: Colors.white,
                     elevation: 0,
-                    margin: EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 16.0),
+                    margin:
+                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                     shadowColor: Colors.grey.shade50,
                     borderOnForeground: false,
                     shape: RoundedRectangleBorder(
@@ -387,4 +399,3 @@ class _CovidWidgetState extends State<CovidWidget> {
     ];
   }
 }
-

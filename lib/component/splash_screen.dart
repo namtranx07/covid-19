@@ -16,19 +16,25 @@ class _SplashScreenWidgetState extends State<SplashScreenWidget> {
     return SafeArea(
       top: false,
       bottom: false,
-      child: initScreen(context),
+      child: Scaffold(body: initScreen(context)),
     );
   }
 
   Widget initScreen(BuildContext context) {
-    return FlareActor(
-      "images/splash_screen.flr",
-      alignment: Alignment.center,
-      fit: BoxFit.contain,
-      animation: "splash",
-      snapToEnd: false,
-      antialias: true,
-      shouldClip: false,
+    return Center(
+      child: Container(
+        height: 100,
+        width: 100,
+        child: FlareActor(
+          "images/loading-animation.flr",
+          alignment: Alignment.center,
+          fit: BoxFit.contain,
+          animation: "active",
+          snapToEnd: false,
+          antialias: true,
+          shouldClip: false,
+        ),
+      ),
     );
   }
 
