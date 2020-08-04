@@ -72,7 +72,7 @@ class CustomPieChartPainter extends CustomPainter {
             ? (((_subParts.elementAt(i) / _total) * 100)
             .toStringAsFixed(this.decimalPlaces) +
             '%')
-            : numberFormat.format(_subParts.elementAt(i)) + " người";
+            : "                  " + numberFormat.format(_subParts.elementAt(i)) + " người";
 
         _drawName(canvas, name, x, y, side);
       }

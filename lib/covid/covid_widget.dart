@@ -236,9 +236,8 @@ class _CovidWidgetState extends State<CovidWidget> {
       chartLegendSpacing: 32.0,
       chartRadius: MediaQuery.of(context).size.width / 2.7,
       showChartValuesInPercentage: false,
-      showChartValues: true,
       showChartValuesOutside: false,
-      chartValueBackgroundColor: Colors.white,
+      chartValueBackgroundColor: Colors.transparent,
       colorList: colorList,
       showLegends: true,
       legendPosition: LegendPosition.right,
@@ -246,7 +245,7 @@ class _CovidWidgetState extends State<CovidWidget> {
       showChartValueLabel: true,
       initialAngle: 0,
       chartValueStyle: defaultChartValueStyle.copyWith(
-        color: Colors.black54,
+        color: Colors.indigo,
       ),
       legendStyle: defaultLegendStyle.copyWith(
         color: Colors.black54,
@@ -395,6 +394,17 @@ class _CovidWidgetState extends State<CovidWidget> {
             '\ ${data.total.toString()}',
         colorFn: (_, __) => charts.MaterialPalette.yellow.shadeDefault.darker,
         overlaySeries: false,
+        insideLabelStyleAccessorFn: (_, __) => charts.TextStyleSpec(
+          color: charts.MaterialPalette.red.shadeDefault,
+          fontSize: 16,
+          fontFamily: "RedHatDisplay",
+          fontWeight: "Bold",
+        ),
+        outsideLabelStyleAccessorFn: (_, __) => charts.TextStyleSpec(
+          color: charts.MaterialPalette.red.shadeDefault,
+          fontSize: 16,
+          fontWeight: "Bold",
+        ),
       ),
     ];
   }
