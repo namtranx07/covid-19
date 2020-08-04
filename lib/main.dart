@@ -2,7 +2,6 @@ import 'package:covid_19/component/splash_screen.dart';
 import 'package:covid_19/network/base_url.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'network/configs.dart';
 
 void main() async {

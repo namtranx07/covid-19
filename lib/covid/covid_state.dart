@@ -5,18 +5,35 @@ class CovidState extends Equatable {
   final Summary summary;
   final Country vnSummary;
   final bool isLoading;
+  final Country otherCountry;
 
-  CovidState({this.summary, this.vnSummary, this.isLoading = true});
+  CovidState({
+    this.summary,
+    this.vnSummary,
+    this.isLoading = true,
+    this.otherCountry,
+  });
 
-  CovidState copyWith({Summary summary, Country vnSummary, bool isLoading}) =>
+  CovidState copyWith({
+    Summary summary,
+    Country vnSummary,
+    bool isLoading,
+    Country otherCountry,
+  }) =>
       CovidState(
-        summary: summary ?? this,
-        vnSummary: vnSummary ?? this,
+        summary: summary ?? this.summary,
+        vnSummary: vnSummary ?? this.vnSummary,
         isLoading: isLoading ?? true,
+        otherCountry: otherCountry ?? this.otherCountry,
       );
 
   @override
-  List<Object> get props => [summary, vnSummary, isLoading];
+  List<Object> get props => [
+        summary,
+        vnSummary,
+        isLoading,
+        otherCountry,
+      ];
 
   @override
   bool operator ==(Object other) {
@@ -31,5 +48,4 @@ class CovidState extends Equatable {
 
   @override
   int get hashCode => super.hashCode;
-
 }

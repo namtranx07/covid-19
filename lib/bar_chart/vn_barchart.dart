@@ -1,5 +1,6 @@
 import 'package:charts_flutter/flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:charts_common/common.dart' as common;
 
 class VNCovidAnalysis {
   final String title;

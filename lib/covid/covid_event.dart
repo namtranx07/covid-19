@@ -8,3 +8,9 @@ abstract class CovidEvent extends Equatable {
 }
 
 class InitialEvent extends CovidEvent {}
+
+class SearchCountryEvent extends CovidEvent {
+  final String name;
+
+  SearchCountryEvent({this.name});
+}
