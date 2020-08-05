@@ -1,13 +1,16 @@
 import 'package:covid_19/api/covidApiImpl.dart';
+import 'package:covid_19/api/covid_latest_apiImpl.dart';
 import 'package:covid_19/covid/covid_event.dart';
 import 'package:covid_19/covid/covid_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CovidBloc extends Bloc<CovidEvent, CovidState> {
   CovidApiImpl _covidApiImpl;
+  CovidLatestApiImpl _covidLatestApiImpl;
 
   CovidBloc() : super(CovidState()) {
     _covidApiImpl = CovidApiImpl();
+    _covidLatestApiImpl = CovidLatestApiImpl();
   }
 
   @override

@@ -24,7 +24,7 @@ class CovidState extends Equatable {
         summary: summary ?? this.summary,
         vnSummary: vnSummary ?? this.vnSummary,
         isLoading: isLoading ?? true,
-        otherCountry: otherCountry ?? this.otherCountry,
+        otherCountry: otherCountry,
       );
 
   @override

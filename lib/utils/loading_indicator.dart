@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -9,17 +8,6 @@ import 'package:flutter/widgets.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class LoadingIndicator extends RefreshIndicator {
-  /// a builder for re wrap child,If you need to change the boxExtent or background,padding etc.you need outerBuilder to reWrap child
-  /// example:
-  /// ```dart
-  /// outerBuilder:(child){
-  ///    return Container(
-  ///       color:Colors.red,
-  ///       child:child
-  ///    );
-  /// }
-  /// ````
-  /// In this example,it will help to add backgroundColor in indicator
   final OuterBuilder outerBuilder;
   final Widget releaseIcon,
       idleIcon,
@@ -128,13 +116,15 @@ Widget buildActivityIndicator() {
   if (Platform.isIOS) {
     return CupertinoActivityIndicator();
   }
-  return Container(
-    color: Colors.transparent,
-    width: 20,
-    height: 20,
-    child: CircularProgressIndicator(
-      strokeWidth: 2,
-      valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+  return Center(
+    child: Container(
+      color: Colors.transparent,
+      width: 20,
+      height: 20,
+      child: CircularProgressIndicator(
+        strokeWidth: 2,
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+      ),
     ),
   );
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:covid_19/bar_chart/vn_barchart.dart';
 import 'package:covid_19/covid/covid_bloc.dart';
@@ -16,6 +18,7 @@ import 'package:intl/intl.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:translator/translator.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 enum CovidType { TOTAL_CONFIRMED, TOTAL_DEATHS, TOTAL_RECOVERED }
 
@@ -44,7 +47,8 @@ class _CovidWidgetState extends State<CovidWidget> {
   String _textTranslated;
   TextEditingController textEditingController;
   bool changeSuffixIcon = false;
-  String nameSearchCountry = "";
+  final Completer<WebViewController> _controller =
+  Completer<WebViewController>();
 
   @override
   void initState() {
@@ -64,13 +68,6 @@ class _CovidWidgetState extends State<CovidWidget> {
   Future<Translation> _translateVNEN(String text) async {
     if (text != null && text.isNotEmpty) {
       return await _translator.translate(text, from: 'auto', to: 'en');
-    }
-    return null;
-  }
-
-  Future<Translation> _translateENVN(String text) async {
-    if (text != null && text.isNotEmpty) {
-      return await _translator.translate(text, from: 'auto', to: 'vi');
     }
     return null;
   }
@@ -110,6 +107,11 @@ class _CovidWidgetState extends State<CovidWidget> {
                 padding: EdgeInsets.zero,
                 child: Column(
                   children: [
+                    Container(
+                      height: 500,
+                        width: double.infinity,
+                        child: _buildTrackingWeb(),
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 32.0, horizontal: 16),
@@ -259,7 +261,7 @@ class _CovidWidgetState extends State<CovidWidget> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Thông tin $nameSearchCountry",
+                    "Thông tin $_textTranslated",
                     style: TextStyle(
                       fontSize: 26,
                       foreground: Paint()..shader = linearGradient,
@@ -304,7 +306,7 @@ class _CovidWidgetState extends State<CovidWidget> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Cập nhật $nameSearchCountry ngày hôm nay",
+                    "Cập nhật $_textTranslated ngày hôm nay",
                     style: TextStyle(
                       fontSize: 26,
                       foreground: Paint()..shader = linearGradient,
@@ -587,14 +589,17 @@ class _CovidWidgetState extends State<CovidWidget> {
                 )
               : IconButton(
                   icon: Icon(Icons.clear),
-                  onPressed: () => textEditingController.clear()),
+                  onPressed: () {
+                    setState(() {
+                      textEditingController.clear();
+                      changeSuffixIcon = false;
+                    });
+                  }),
         ),
         autocorrect: true,
         enableSuggestions: true,
         onSubmitted: (text) async {
           final result = await _translateVNEN("nước " + text);
-          final resultENVN = await _translateENVN(result.text);
-          nameSearchCountry = resultENVN.text;
           setState(() {
             _textTranslated = result.text;
             bloc.add(SearchCountryEvent(name: _textTranslated));
@@ -604,7 +609,7 @@ class _CovidWidgetState extends State<CovidWidget> {
         textAlign: TextAlign.left,
         onChanged: (text) {
           setState(() {
-            if (text != "") {
+            if (text != "" && text.isNotEmpty) {
               changeSuffixIcon = true;
             } else {
               changeSuffixIcon = false;
@@ -612,6 +617,32 @@ class _CovidWidgetState extends State<CovidWidget> {
           });
         },
       ),
+    );
+  }
+
+  final _key = UniqueKey();
+  Widget _buildTrackingWeb() {
+    return WebView(
+      key: _key,
+      initialUrl: "https://narrativa.carto.com/builder/4abded63-5c0f-41ae-a9cb-f8e9d6400db7/embed",
+      onWebViewCreated: (c) => _controller.complete(c),
+      javascriptMode: JavascriptMode.unrestricted,
+
+      navigationDelegate: (NavigationRequest request) {
+        if (request.url.startsWith('https://carto.com/')) {
+          print('blocking navigation to $request}');
+          return NavigationDecision.prevent;
+        }
+        print('allowing navigation to $request');
+        return NavigationDecision.navigate;
+      },
+      onPageStarted: (String url) {
+        print('Page started loading: $url');
+      },
+      onPageFinished: (String url) {
+        print('Page finished loading: $url');
+      },
+      gestureNavigationEnabled: true,
     );
   }
 }
