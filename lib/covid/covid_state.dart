@@ -6,12 +6,16 @@ class CovidState extends Equatable {
   final Country vnSummary;
   final bool isLoading;
   final Country otherCountry;
+  final bool noData;
+  final changeIconSearch;
 
   CovidState({
     this.summary,
     this.vnSummary,
     this.isLoading = true,
     this.otherCountry,
+    this.noData = false,
+    this.changeIconSearch = false,
   });
 
   CovidState copyWith({
@@ -19,12 +23,16 @@ class CovidState extends Equatable {
     Country vnSummary,
     bool isLoading,
     Country otherCountry,
+    bool noData,
+    bool changeIconSearch,
   }) =>
       CovidState(
         summary: summary ?? this.summary,
         vnSummary: vnSummary ?? this.vnSummary,
         isLoading: isLoading ?? true,
         otherCountry: otherCountry,
+        noData: noData ?? false,
+        changeIconSearch: changeIconSearch ?? false,
       );
 
   @override
@@ -33,6 +41,8 @@ class CovidState extends Equatable {
         vnSummary,
         isLoading,
         otherCountry,
+        noData,
+        changeIconSearch,
       ];
 
   @override

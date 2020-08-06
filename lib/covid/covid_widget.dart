@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:covid_19/bar_chart/vn_barchart.dart';
@@ -7,14 +8,18 @@ import 'package:covid_19/covid/covid_event.dart';
 import 'package:covid_19/covid/covid_state.dart';
 import 'package:covid_19/custom_piechart_painter/custom_piechart.dart';
 import 'package:covid_19/resources/app_icons.dart';
+import 'package:covid_19/resources/app_strings.dart';
+import 'package:covid_19/utils/Utils.dart';
 import 'package:covid_19/utils/custom_appbar.dart';
 import 'package:covid_19/utils/loading_indicator.dart';
+import 'package:covid_19/web_view/web_view.dart';
 import 'package:flutter/material.dart';
 import 'package:covid_19/resources/app_fonts.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:translator/translator.dart';
@@ -46,9 +51,11 @@ class _CovidWidgetState extends State<CovidWidget> {
   RefreshController _refreshController;
   String _textTranslated;
   TextEditingController textEditingController;
-  bool changeSuffixIcon = false;
   final Completer<WebViewController> _controller =
-  Completer<WebViewController>();
+      Completer<WebViewController>();
+  final _key = UniqueKey();
+  ScrollController _scrollController;
+  bool visibleKeyboard = false;
 
   @override
   void initState() {
@@ -57,12 +64,19 @@ class _CovidWidgetState extends State<CovidWidget> {
     bloc.add(InitialEvent());
     _refreshController = RefreshController();
     textEditingController = TextEditingController();
+    _scrollController = ScrollController();
+    KeyboardVisibilityNotification().addNewListener(
+      onChange: (bool visible) {
+        visibleKeyboard = visible;
+      },
+    );
   }
 
   @override
   void dispose() {
     super.dispose();
     textEditingController.dispose();
+    _scrollController.dispose();
   }
 
   Future<Translation> _translateVNEN(String text) async {
@@ -81,7 +95,7 @@ class _CovidWidgetState extends State<CovidWidget> {
         appBar: AppBarGradient(
           child: AppBar(
             title: Text(
-              'Covid-19',
+              AppStrings.appTitle,
               style: TextStyle(
                 color: Colors.white,
               ).redHatDisplayMedium(),
@@ -96,30 +110,33 @@ class _CovidWidgetState extends State<CovidWidget> {
             if (!state.isLoading) {
               _refreshController.refreshCompleted();
             }
+            if (textEditingController.text.toLowerCase().contains("viet nam") ||
+                textEditingController.text.toLowerCase().contains("việt nam") ||
+                textEditingController.text.toLowerCase().contains("vietnam")) {
+              _scrollController.animateTo(_scrollController.position
+                  .maxScrollExtent - 900, duration: Duration(milliseconds: 500
+              ), curve: Curves.decelerate);
+            }
+            if (state.noData && !visibleKeyboard) toast("Không có dữ liệu");
             return SmartRefresher(
               enablePullDown: true,
               controller: _refreshController,
+              scrollController: _scrollController,
               header: LoadingIndicator(),
               onRefresh: () {
                 bloc.add(InitialEvent());
+                textEditingController.clear();
               },
               child: SingleChildScrollView(
                 padding: EdgeInsets.zero,
                 child: Column(
                   children: [
-                    Container(
-                      height: 500,
-                        width: double.infinity,
-                        child: _buildTrackingWeb(),
-                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 32.0, horizontal: 16),
-                      child: _buildSearchView(),
+                      child: _buildSearchView(state),
                     ),
-                    if (state.otherCountry != null &&
-                        _textTranslated != null &&
-                        textEditingController.text != "")
+                    if (state.otherCountry != null)
                       _buildSearchResultWidget(state),
                     _wrappedCard(
                       child: Column(
@@ -133,7 +150,7 @@ class _CovidWidgetState extends State<CovidWidget> {
                             child: Align(
                               alignment: Alignment.centerLeft,
                               child: Text(
-                                "Thông tin thế giới",
+                                AppStrings.worldInfo,
                                 style: TextStyle(
                                   fontSize: 26,
                                   foreground: Paint()..shader = linearGradient,
@@ -172,7 +189,7 @@ class _CovidWidgetState extends State<CovidWidget> {
                             child: Align(
                               alignment: Alignment.centerLeft,
                               child: Text(
-                                "Cập nhật ngày hôm nay",
+                                AppStrings.updateToday,
                                 style: TextStyle(
                                   fontSize: 26,
                                   foreground: Paint()..shader = linearGradient,
@@ -196,8 +213,20 @@ class _CovidWidgetState extends State<CovidWidget> {
                       height: 32,
                     ),
                     _buildVNInfo(state),
-                    SizedBox(
-                      height: 50,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 32, horizontal: 16),
+                      child: Text(
+                        AppStrings.nationalInfectionMap,
+                        style: TextStyle(
+                          fontSize: 26,
+                          foreground: Paint()..shader = linearGradient,
+                        ).redHatDisplayBold(),
+                      ),
+                    ),
+                    WebViewWidget(
+                      key: _key,
+                      controller: _controller,
                     ),
                   ],
                 ),
@@ -226,7 +255,7 @@ class _CovidWidgetState extends State<CovidWidget> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Thông tin Việt Nam",
+                AppStrings.vnInfo,
                 style: TextStyle(
                   fontSize: 26,
                   foreground: Paint()..shader = linearGradient,
@@ -261,7 +290,7 @@ class _CovidWidgetState extends State<CovidWidget> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Thông tin $_textTranslated",
+                    "Thông tin ${_textTranslated.toUpperCase()}",
                     style: TextStyle(
                       fontSize: 26,
                       foreground: Paint()..shader = linearGradient,
@@ -306,7 +335,7 @@ class _CovidWidgetState extends State<CovidWidget> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Cập nhật $_textTranslated ngày hôm nay",
+                    "Cập nhật ${_textTranslated.toUpperCase()} ngày hôm nay",
                     style: TextStyle(
                       fontSize: 26,
                       foreground: Paint()..shader = linearGradient,
@@ -347,9 +376,8 @@ class _CovidWidgetState extends State<CovidWidget> {
     );
   }
 
-  Widget _buildPieChart({CovidState state, bool otherCountry = false}) {
-    double newConfirmed = !otherCountry
-        ? (state.summary?.global?.newConfirmed)?.toDouble() ?? 0.0
+  Widget _buildPieChart({CovidState state, bool otherCountry = false }) {
+    double newConfirmed = !otherCountry ? (state.summary?.global?.newConfirmed)?.toDouble() ?? 0.0
         : ((state.otherCountry?.newConfirmed))?.toDouble() ?? 0.0;
     double newDeaths = !otherCountry
         ? (state.summary?.global?.newDeaths)?.toDouble() ?? 0.0
@@ -357,11 +385,12 @@ class _CovidWidgetState extends State<CovidWidget> {
     double newRecovered = !otherCountry
         ? (state.summary?.global?.newRecovered)?.toDouble() ?? 0.0
         : ((state.otherCountry?.newRecovered)?.toDouble() ?? 0.0);
+
     Map<String, double> dataMap = Map();
     dataMap = {
-      "Số ca nhiễm mới": newConfirmed,
-      "Số ca tử vong mới": newDeaths,
-      "Số ca hồi phục mới": newRecovered
+      AppStrings.newConfirmedCases: newConfirmed,
+      AppStrings.newDeathCases: newDeaths,
+      AppStrings.newRecoveredCases: newRecovered
     };
 
     return CustomPieChart(
@@ -399,7 +428,7 @@ class _CovidWidgetState extends State<CovidWidget> {
         content = Column(
           children: [
             Text(
-              "Tổng số ca nhiễm",
+              AppStrings.totalConfirmedCases,
               style: TextStyle(
                 color: Colors.black45,
                 fontSize: 16,
@@ -433,7 +462,7 @@ class _CovidWidgetState extends State<CovidWidget> {
         content = Column(
           children: [
             Text(
-              "Tổng số ca tử vong",
+              AppStrings.totalDeathCases,
               style: TextStyle(
                 color: Colors.black45,
                 fontSize: 16,
@@ -468,7 +497,7 @@ class _CovidWidgetState extends State<CovidWidget> {
         content = Column(
           children: [
             Text(
-              "Tổng số ca hồi phục",
+              AppStrings.totalRecoveredCases,
               style: TextStyle(
                 color: Colors.black45,
                 fontSize: 16,
@@ -553,7 +582,7 @@ class _CovidWidgetState extends State<CovidWidget> {
     ];
   }
 
-  Widget _buildSearchView() {
+  Widget _buildSearchView(CovidState state) {
     return Container(
       padding: EdgeInsets.all(4),
       decoration: BoxDecoration(
@@ -580,7 +609,7 @@ class _CovidWidgetState extends State<CovidWidget> {
             fontSize: 16,
             color: Colors.grey,
           ).redHatDisplayRegular(),
-          suffixIcon: !changeSuffixIcon
+          suffixIcon: !state.changeIconSearch
               ? Container(
                   child: AppIcons.ic_search,
                   padding: EdgeInsets.all(10),
@@ -590,59 +619,30 @@ class _CovidWidgetState extends State<CovidWidget> {
               : IconButton(
                   icon: Icon(Icons.clear),
                   onPressed: () {
-                    setState(() {
-                      textEditingController.clear();
-                      changeSuffixIcon = false;
-                    });
+                    textEditingController.clear();
+                    bloc.add(ChangeIconSearch());
                   }),
         ),
         autocorrect: true,
         enableSuggestions: true,
         onSubmitted: (text) async {
-          final result = await _translateVNEN("nước " + text);
-          setState(() {
+          if (text != "" || text.isNotEmpty) {
+            final result = await _translateVNEN("nước " + text);
             _textTranslated = result.text;
+            print('text after translated: $_textTranslated');
             bloc.add(SearchCountryEvent(name: _textTranslated));
-          });
+          }
         },
         maxLines: 1,
         textAlign: TextAlign.left,
         onChanged: (text) {
-          setState(() {
-            if (text != "" && text.isNotEmpty) {
-              changeSuffixIcon = true;
-            } else {
-              changeSuffixIcon = false;
-            }
-          });
+          if (text != "" && text.isNotEmpty) {
+            bloc.add(ChangeIconSearch(change: true));
+          } else {
+            bloc.add(ChangeIconSearch());
+          }
         },
       ),
-    );
-  }
-
-  final _key = UniqueKey();
-  Widget _buildTrackingWeb() {
-    return WebView(
-      key: _key,
-      initialUrl: "https://narrativa.carto.com/builder/4abded63-5c0f-41ae-a9cb-f8e9d6400db7/embed",
-      onWebViewCreated: (c) => _controller.complete(c),
-      javascriptMode: JavascriptMode.unrestricted,
-
-      navigationDelegate: (NavigationRequest request) {
-        if (request.url.startsWith('https://carto.com/')) {
-          print('blocking navigation to $request}');
-          return NavigationDecision.prevent;
-        }
-        print('allowing navigation to $request');
-        return NavigationDecision.navigate;
-      },
-      onPageStarted: (String url) {
-        print('Page started loading: $url');
-      },
-      onPageFinished: (String url) {
-        print('Page finished loading: $url');
-      },
-      gestureNavigationEnabled: true,
     );
   }
 }

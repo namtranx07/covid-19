@@ -14,3 +14,9 @@ class SearchCountryEvent extends CovidEvent {
 
   SearchCountryEvent({this.name});
 }
+
+class ChangeIconSearch extends CovidEvent {
+  final bool change;
+
+  ChangeIconSearch({this.change = false});
+}
