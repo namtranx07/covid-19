@@ -46,6 +46,7 @@ dependencies:
   webview_flutter: ^0.3.22+1
   fluttertoast: ^7.0.2
   keyboard_visibility: ^0.5.6
+  rxdart: 0.23.1
 
 dev_dependencies:
   flutter_test:

@@ -24,8 +24,8 @@ class Network {
   static Dio getBaseDio({String baseUrl}) {
     BaseOptions options = BaseOptions(
       baseUrl: baseUrl,
-      connectTimeout: 10000,
-      receiveTimeout: 10000,
+      connectTimeout: 50000,
+      receiveTimeout: 50000,
     );
     Dio dio = Dio(options);
     if (enableLoggingView) {

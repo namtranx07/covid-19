@@ -227,6 +227,7 @@ class _CovidWidgetState extends State<CovidWidget> {
                     WebViewWidget(
                       key: _key,
                       controller: _controller,
+                      ignorePointer: true,
                     ),
                   ],
                 ),

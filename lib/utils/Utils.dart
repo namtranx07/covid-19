@@ -12,3 +12,15 @@ toast(message) {
       fontSize: 16.0
   );
 }
+
+void fadeRouteTransition(BuildContext context, Widget child) {
+  Navigator.of(context).push(
+    PageRouteBuilder(
+      pageBuilder: (_, __, ___) => child,
+      transitionsBuilder: (_, animation, ___, child) => FadeTransition(
+        opacity: animation,
+        child: child,
+      ),
+    ),
+  );
+}
